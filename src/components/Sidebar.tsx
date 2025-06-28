@@ -8,7 +8,8 @@ import {
   Shield, 
   Settings as SettingsIcon,
   ChevronLeft,
-  Eye
+  Eye,
+  Scale
 } from 'lucide-react';
 import { ViewType } from '../App';
 
@@ -26,6 +27,7 @@ const menuItems = [
   { id: 'bias' as ViewType, label: 'Bias Analysis', icon: AlertTriangle },
   { id: 'explainability' as ViewType, label: 'Explainability', icon: Brain },
   { id: 'risk' as ViewType, label: 'Risk Assessment', icon: Shield },
+  { id: 'compliance' as ViewType, label: 'Law Compliance', icon: Scale },
   { id: 'settings' as ViewType, label: 'Settings', icon: SettingsIcon },
 ];
 

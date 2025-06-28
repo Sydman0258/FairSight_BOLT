@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { Login } from './components/auth/Login';
+import { Register } from './components/auth/Register';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
@@ -8,10 +12,25 @@ import { BiasAnalysis } from './components/BiasAnalysis';
 import { ExplainabilityReport } from './components/ExplainabilityReport';
 import { RiskAssessment } from './components/RiskAssessment';
 import { Settings } from './components/Settings';
+import { ComplianceDetails } from './components/ComplianceDetails';
 
-export type ViewType = 'dashboard' | 'upload' | 'results' | 'bias' | 'explainability' | 'risk' | 'settings';
+export type ViewType = 'dashboard' | 'upload' | 'results' | 'bias' | 'explainability' | 'risk' | 'settings' | 'compliance';
 
-function App() {
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+      </div>
+    );
+  }
+  
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+const MainApp: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -29,6 +48,8 @@ function App() {
         return <ExplainabilityReport />;
       case 'risk':
         return <RiskAssessment />;
+      case 'compliance':
+        return <ComplianceDetails />;
       case 'settings':
         return <Settings />;
       default:
@@ -53,6 +74,24 @@ function App() {
         </main>
       </div>
     </div>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/*" element={
+            <ProtectedRoute>
+              <MainApp />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
